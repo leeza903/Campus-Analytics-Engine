@@ -1,15 +1,15 @@
-#include <students_ops.h>
+#include "students_ops.h"
 
 // ============================================================
-// isValidRollFormat: BSAI-YY-XXX check 
+// isValidRollFormat: BSAI-YY-XXX check
 // Example: BSAI-23-001 ✓  |  ABC-23-001 ✗
 // ============================================================
 bool isValidRollFormat(string roll) {
-    // Length exactly 11 
+    // Length exactly 11
     if (roll.length() != 11) return false;
 
     // "BSAI" must written
-    if (roll[0] != 'B' || roll[1] != 'S' || roll[2] != 'A' || roll[3] != 'I') 
+    if (roll[0] != 'B' || roll[1] != 'S' || roll[2] != 'A' || roll[3] != 'I')
         return false;
 
     // 4th position dash
@@ -27,7 +27,7 @@ bool isValidRollFormat(string roll) {
     if (roll[9] < '0' || roll[9] > '9') return false;
     if (roll[10] < '0' || roll[10] > '9') return false;
 
-    return true;  
+    return true;
 }
 
 // ============================================================
@@ -36,10 +36,10 @@ bool isValidRollFormat(string roll) {
 bool hasDigits(string name) {
     for (int i = 0; i < name.length(); i++) {
         if (name[i] >= '0' && name[i] <= '9') {
-            return true;  
+            return true;
         }
     }
-    return false; 
+    return false;
 }
 
 // ============================================================
@@ -49,12 +49,12 @@ int loadStudents(Student students[], int maxSize) {
     CSVRow rows[MAX_ROWS];
     int rowCount = 0, colCount = 0;
 
-    // File read 
+    // File read
     readTXT("students.txt", rows, rowCount, colCount);
 
     int count = 0;
     for (int i = 0; i < rowCount && count < maxSize; i++) {
-        // access Row  data 
+        // access Row  data
         students[count].roll_no = rows[i].data[0];
         students[count].name = rows[i].data[1];
         students[count].department = rows[i].data[2];
@@ -65,7 +65,7 @@ int loadStudents(Student students[], int maxSize) {
             students[count].semester = students[count].semester * 10 + (rows[i].data[3][j] - '0');
         }
 
-        // CGPA string to double conversion 
+        // CGPA string to double conversion
         students[count].cgpa = 0.0;
         bool afterDecimal = false;
         double decimalPlace = 0.1;
@@ -90,7 +90,7 @@ int loadStudents(Student students[], int maxSize) {
 }
 
 // ============================================================
-// saveStudents: save file from array 
+// saveStudents: save file from array
 // ============================================================
 void saveStudents(Student students[], int count) {
     CSVRow rows[MAX_ROWS];
@@ -159,7 +159,7 @@ void saveStudents(Student students[], int count) {
 }
 
 // ============================================================
-// addStudent: new student addition 
+// addStudent: new student addition
 // ============================================================
 void addStudent() {
     Student s;
@@ -236,7 +236,7 @@ void addStudent() {
 
     s.status = "active";
 
-    //  append in  file 
+    //  append in  file
     CSVRow row;
     row.colCount = 6;
     row.data[0] = s.roll_no;
@@ -288,7 +288,7 @@ void addStudent() {
 }
 
 // ============================================================
-// searchByRoll:  search student by roll number 
+// searchByRoll:  search student by roll number
 // ============================================================
 void searchByRoll() {
     cout << "\n========== SEARCH BY ROLL NUMBER ==========" << endl;
@@ -311,7 +311,7 @@ void searchByRoll() {
 }
 
 // ============================================================
-// searchByName: search names of the student 
+// searchByName: search names of the student
 // ============================================================
 void searchByName() {
     cout << "\n========== SEARCH BY NAME ==========" << endl;
@@ -320,7 +320,7 @@ void searchByName() {
     cin.ignore();
     getline(cin, searchName);
 
-    // Search in lowercase  converion 
+    // Search in lowercase  converion
     string searchLower = "";
     for (int i = 0; i < searchName.length(); i++) {
         char c = searchName[i];
@@ -338,7 +338,7 @@ void searchByName() {
     for (int i = 0; i < rowCount; i++) {
         string name = rows[i].data[1];
 
-        // Name in lowercase converion 
+        // Name in lowercase converion
         string nameLower = "";
         for (int j = 0; j < name.length(); j++) {
             char c = name[j];
@@ -346,7 +346,7 @@ void searchByName() {
             nameLower += c;
         }
 
-        // Check search name  part 
+        // Check search name  part
         bool isSubstring = false;
         for (int j = 0; j <= (int)(nameLower.length() - searchLower.length()); j++) {
             bool match = true;
@@ -374,7 +374,7 @@ void searchByName() {
 }
 
 // ============================================================
-// updateStudent: Student update 
+// updateStudent: Student update
 // ============================================================
 void updateStudent() {
     cout << "\n========== UPDATE STUDENT ==========" << endl;
@@ -386,7 +386,7 @@ void updateStudent() {
     Student students[MAX];
     int count = loadStudents(students, MAX);
 
-    // Search Student 
+    // Search Student
     int index = -1;
     for (int i = 0; i < count; i++) {
         if (students[i].roll_no == roll) {
@@ -400,7 +400,7 @@ void updateStudent() {
         return;
     }
 
-    // Current details 
+    // Current details
     cout << "\nCurrent Details:" << endl;
     cout << "1. Name:       " << students[index].name << endl;
     cout << "2. Department: " << students[index].department << endl;
@@ -479,7 +479,7 @@ void updateStudent() {
 }
 
 // ============================================================
-// softDeleteStudent: Status inactive 
+// softDeleteStudent: Status inactive
 // ============================================================
 void softDeleteStudent() {
     cout << "\n========== SOFT DELETE STUDENT ==========" << endl;

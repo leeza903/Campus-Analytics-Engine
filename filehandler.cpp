@@ -1,4 +1,4 @@
-#include <filehandler.h>
+#include "filehandler.h"
 
 void readTXT(string filename, CSVRow rows[], int &rowCount, int &colCount) {
     ifstream file(filename.c_str());
@@ -23,11 +23,11 @@ void readTXT(string filename, CSVRow rows[], int &rowCount, int &colCount) {
             char c = line[i];
 
             if (c == '"') {
-                
+
                 inQuotes = !inQuotes;
             }
             else if (c == ',' && !inQuotes) {
-            
+
                 currentRow.data[currentRow.colCount] = cell;
                 currentRow.colCount++;
                 cell = "";
@@ -46,7 +46,7 @@ void readTXT(string filename, CSVRow rows[], int &rowCount, int &colCount) {
         rows[rowCount] = currentRow;
         rowCount++;
 
-        // set column count from first row data 
+        // set column count from first row data
         if (rowCount == 1) colCount = currentRow.colCount;
     }
 
@@ -61,7 +61,7 @@ void writeTXT(string filename, CSVRow rows[], int rowCount, int colCount) {
     }
     for (int i = 0; i < rowCount; i++) {
         for (int j = 0; j < rows[i].colCount; j++) {
-        
+
             if (rows[i].data[j].find(',') != string::npos) {
                 file << "\"" << rows[i].data[j] << "\"";
             } else {
@@ -76,7 +76,7 @@ void writeTXT(string filename, CSVRow rows[], int rowCount, int colCount) {
     file.close();
 }
 
-// appendTXT: add row in a file 
+// appendTXT: add row in a file
 void appendTXT(string filename, CSVRow row, int colCount) {
     ofstream file(filename.c_str(), ios::app);  // append mode
     if (!file.is_open()) {
@@ -102,14 +102,14 @@ bool findRow(string filename, string value, int colIndex, CSVRow &result) {
     int rowCount = 0, colCount = 0;
     readTXT(filename, rows, rowCount, colCount);
 
-    
+
     for (int i = 0; i < rowCount; i++) {
         if (colIndex < rows[i].colCount && rows[i].data[colIndex] == value) {
-            result = rows[i];  
-            return true;       
+            result = rows[i];
+            return true;
         }
     }
-    return false;  
+    return false;
 }
 
 //  check rowExists

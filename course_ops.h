@@ -1,7 +1,7 @@
 #ifndef COURSE_OPS_H
 #define COURSE_OPS_H
 
-#include <filehandler.h>
+#include "filehandler.h"
 
 // Enrollment result types
 enum EnrollResult {
