@@ -1,7 +1,9 @@
 #ifndef ATTENDANCE_H
 #define ATTENDANCE_H
-
+#include<iostream>
 #include "filehandler.h"
+#include<string>
+using namespace std;
 
 // Global backup for undo
 extern CSVRow attendanceBackup[500];

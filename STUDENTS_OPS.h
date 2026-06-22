@@ -5,8 +5,7 @@
 #include <string>
 #include "filehandler.h"
 using namespace std;
-
-// to store Student data
+// to store Student data 
 struct Student {
     string roll_no;
     string name;
@@ -31,7 +30,7 @@ void searchByRoll();
 //  search by name (part of name)
 void searchByName();
 
-// Student update
+// Student update 
 void updateStudent();
 
 // Soft delete (to status inactive )
@@ -43,7 +42,7 @@ void listActiveStudents();
 // load student array from file
 int loadStudents(Student students[], int maxSize);
 
-//  to save file from array
+//  to save file from array 
 void saveStudents(Student students[], int count);
 
 #endif

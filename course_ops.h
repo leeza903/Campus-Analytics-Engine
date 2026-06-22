@@ -1,17 +1,22 @@
 #ifndef COURSE_OPS_H
 #define COURSE_OPS_H
 
+#include<iostream>
+#include<string>
 #include "filehandler.h"
+#include "student_ops.h"
+using namespace std;
+
 
 // Enrollment result types
 enum EnrollResult {
-    SUCCESS,
-    STUDENT_INACTIVE,
-    COURSE_NOT_FOUND,
-    NO_SEATS,
-    ALREADY_ENROLLED,
-    CREDIT_OVERLOAD,
-    PREREQ_NOT_MET
+    ENROLL_SUCCESS,
+    ENROLL_STUDENT_INACTIVE,
+    ENROLL_COURSE_NOT_FOUND,
+    ENROLL_NO_SEATS,
+    ENROLL_ALREADY_ENROLLED,
+    ENROLL_CREDIT_OVERLOAD,
+    ENROLL_PREREQ_NOT_MET
 };
 
 // Enroll student in course
