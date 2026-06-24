@@ -39,8 +39,20 @@ void readTXT(string filename, CSVRow rows[], int &rowCount, int &colCount) {
         }
 
         //  add last cell;
-        currentRow.data[currentRow.colCount] = cell;
-        currentRow.colCount++;
+           // Trim trailing \r from last cell (Windows line endings)
+    if(cell.length() > 0 && cell[cell.length()-1] == '\r') {
+    cell = cell.substr(0, cell.length()-1);
+}
+currentRow.data[currentRow.colCount] = cell;
+currentRow.colCount++;
+
+// Also trim \r from all previously stored cells
+for (int j = 0; j < currentRow.colCount; j++) {
+    string &s = currentRow.data[j];
+    if (s.length() > 0 && s[s.length()-1] == '\r') {
+        s = s.substr(0, s.length()-1);
+    }
+}
 
         // store in array
         rows[rowCount] = currentRow;

@@ -168,7 +168,6 @@ void addStudent() {
 
     // Roll number input
     cout << "Enter Roll Number (format: BSAI-YY-XXX): ";
-    cout << "Enter Roll: ";
     getline(cin,s.roll_no);
 
     // Format check
