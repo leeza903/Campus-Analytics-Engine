@@ -7,7 +7,7 @@
 using namespace std;
 
 // Maximum rows and columns  
-const int MAX_ROWS = 500;
+const int MAX_ROWS = 2000;
 const int MAX_COLS = 10;
 //this struct will represent a row
 // for example In students.txt one line = one student

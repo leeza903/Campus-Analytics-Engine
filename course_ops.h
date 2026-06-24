@@ -4,7 +4,7 @@
 #include<iostream>
 #include<string>
 #include "filehandler.h"
-#include "student_ops.h"
+#include "students_ops.h"
 using namespace std;
 
 

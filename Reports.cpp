@@ -45,22 +45,25 @@ void printAttendanceDefaulters() {
     cout << "Roll No\t\tName\t\t\tCourse\t\tAttendance %" << endl;
     cout << "----------------------------------------------------------------" << endl;
 
-    vector<vector<string>> enrollments = readTXT("enrollments.txt");
+    CSVRow enrollments[MAX_ROWS];
+    int enrollCount = 0, enrollColCount = 0;
+    readTXT("enrollments.txt", enrollments, enrollCount, enrollColCount);
     bool found = false;
 
-    for (int i = 1; i < enrollments.size(); i++) {
-        if (enrollments[i].size() < 6) continue;
-        if (enrollments[i][5] != "active") continue;
+    for (int i = 1; i < enrollCount; i++) {
+        if (enrollments[i].colCount < 6) continue;
+        if (enrollments[i].data[5] != "active") continue;
 
-        string roll = enrollments[i][1];
-        string courseCode = enrollments[i][2];
+        string roll = enrollments[i].data[1];
+        string courseCode = enrollments[i].data[2];
 
         double pct = getAttendancePct(roll, courseCode);
 
         if (pct < 75.0) {
             found = true;
-            vector<string> student = findRow("students.txt", 0, roll);
-            string name = (student.size() > 1) ? student[1] : "Unknown";
+            CSVRow student;
+            bool foundStudent = findRow("students.txt", roll, 0, student);
+            string name = (student.colCount > 1) ? student.data[1] : "Unknown";
 
             cout << roll << "\t\t" << name << "\t\t" << courseCode << "\t\t" << pct << "%" << endl;
         }
@@ -103,12 +106,14 @@ void printSemesterResult() {
         else if (gpa >= 2.0) overallGrade = "C";
         else if (gpa >= 1.0) overallGrade = "D";
 
-        vector<vector<string>> enrollments = readTXT("enrollments.txt");
+        CSVRow enrollments[MAX_ROWS];
+        int enrollCount = 0, enrollColCount = 0;
+        readTXT("enrollments.txt", enrollments, enrollCount, enrollColCount);
         bool shortage = false;
-        for (int j = 1; j < enrollments.size(); j++) {
-            if (enrollments[j].size() > 2 && enrollments[j][1] == students[i].roll_no && 
-                enrollments[j][5] == "active") {
-                double pct = getAttendancePct(students[i].roll_no, enrollments[j][2]);
+        for (int j = 1; j < enrollCount; j++) {
+            if (enrollments[j].colCount > 2 && enrollments[j].data[1] == students[i].roll_no && 
+                enrollments[j].data[5] == "active") {
+                double pct = getAttendancePct(students[i].roll_no, enrollments[j].data[2]);
                 if (pct < 75.0) {
                     shortage = true;
                     break;

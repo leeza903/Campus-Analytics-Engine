@@ -168,10 +168,11 @@ void addStudent() {
 
     // Roll number input
     cout << "Enter Roll Number (format: BSAI-YY-XXX): ";
-    cin >> s.roll_no;
+    cout << "Enter Roll: ";
+    getline(cin,s.roll_no);
 
     // Format check
-    if (!isValidRollFormat(s.roll_no)) {
+    if(!isValidRollFormat(s.roll_no)) {
         cout << "Error: Invalid roll format! Must be BSAI-YY-XXX." << endl;
         return;
     }
@@ -486,6 +487,7 @@ void softDeleteStudent() {
     cout << "Enter Roll Number: ";
     string roll;
     cin >> roll;
+    cin.ignore(10000, '\n');
 
     const int MAX = 100;
     Student students[MAX];

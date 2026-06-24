@@ -3,7 +3,7 @@
 using namespace std;
 
 #include "filehandler.h"
-#include "student_ops.h"
+#include "students_ops.h"
 #include "course_ops.h"
 #include "attendance.h"
 #include "grades.h"
@@ -16,6 +16,7 @@ void attendanceMenu();
 void gradesMenu();
 void feeMenu();
 
+int choice;
 void studentMenu() {
     while (true) {
         cout << "\n========== STUDENT MANAGEMENT ==========" << endl;
@@ -28,10 +29,7 @@ void studentMenu() {
         cout << "0. Back to Main Menu" << endl;
         cout << "----------------------------------------" << endl;
         cout << "Enter your choice: ";
-
-        int choice;
-        cin >> choice;
-
+        cin>>choice;
         switch (choice) {
             case 1: addStudent(); break;
             case 2: searchByRoll(); break;
@@ -40,7 +38,8 @@ void studentMenu() {
             case 5: softDeleteStudent(); break;
             case 6: listActiveStudents(); break;
             case 0: return;
-            default: cout << "Invalid choice! Please try again." << endl;
+            default: 
+                if (choice != -1) cout << "Invalid choice! Please try again." << endl;
         }
     }
 }
@@ -54,16 +53,14 @@ void courseMenu() {
         cout << "0. Back to Main Menu" << endl;
         cout << "----------------------------------------" << endl;
         cout << "Enter your choice: ";
-
-        int choice;
-        cin >> choice;
-
+         cin>>choice;
         switch (choice) {
             case 1: enrollStudentMenu(); break;
             case 2: dropCourseMenu(); break;
             case 3: listEnrolledMenu(); break;
             case 0: return;
-            default: cout << "Invalid choice! Please try again." << endl;
+            default: 
+                if (choice != -1) cout << "Invalid choice! Please try again." << endl;
         }
     }
 }
@@ -78,17 +75,15 @@ void attendanceMenu() {
         cout << "0. Back to Main Menu" << endl;
         cout << "----------------------------------------" << endl;
         cout << "Enter your choice: ";
-
-        int choice;
-        cin >> choice;
-
+         cin>>choice;
         switch (choice) {
             case 1: markAttendance(); break;
             case 2: getShortageList(); break;
             case 3: undoLastSession(); break;
             case 4: printDailySheet(); break;
             case 0: return;
-            default: cout << "Invalid choice! Please try again." << endl;
+            default: 
+                if (choice != -1) cout << "Invalid choice! Please try again." << endl;
         }
     }
 }
@@ -101,9 +96,7 @@ void gradesMenu() {
         cout << "0. Back to Main Menu" << endl;
         cout << "----------------------------------------" << endl;
         cout << "Enter your choice: ";
-
-        int choice;
-        cin >> choice;
+        cin>>choice;
 
         switch (choice) {
             case 1: enterMarksMenu(); break;
@@ -120,7 +113,8 @@ void gradesMenu() {
                 break;
             }
             case 0: return;
-            default: cout << "Invalid choice! Please try again." << endl;
+            default: 
+                if (choice != -1) cout << "Invalid choice! Please try again." << endl;
         }
     }
 }
@@ -134,16 +128,15 @@ void feeMenu() {
         cout << "0. Back to Main Menu" << endl;
         cout << "----------------------------------------" << endl;
         cout << "Enter your choice: ";
-
-        int choice;
-        cin >> choice;
+        cin>>choice;
 
         switch (choice) {
             case 1: recordPaymentMenu(); break;
             case 2: generateReceiptMenu(); break;
             case 3: getDefaultersMenu(); break;
             case 0: return;
-            default: cout << "Invalid choice! Please try again." << endl;
+            default: 
+                if (choice != -1) cout << "Invalid choice! Please try again." << endl;
         }
     }
 }
@@ -165,9 +158,7 @@ int main() {
         cout << "0. Exit" << endl;
         cout << "--------------------------------" << endl;
         cout << "Enter your choice: ";
-
-        int choice;
-        cin >> choice;
+        cin>>choice;
 
         switch (choice) {
             case 1: studentMenu(); break;
@@ -180,7 +171,8 @@ int main() {
                 cout << "\nThank you for using Campus Analytics Engine!" << endl;
                 cout << "Goodbye!" << endl;
                 return 0;
-            default: cout << "Invalid choice! Please try again." << endl;
+            default: 
+                if (choice != -1) cout << "Invalid choice! Please try again." << endl;
         }
     }
 

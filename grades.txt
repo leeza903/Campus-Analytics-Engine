@@ -1,0 +1,3 @@
+roll_no,course_code,quiz_avg,assignment,mid,final,total,grade
+BSAI-23-008,CS101,47.33,32.00,23.00,45.00,37.33,F
+BSAI-23-005,CS101,55.33,100.00,36.00,45.00,48.83,F

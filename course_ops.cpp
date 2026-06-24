@@ -1,7 +1,7 @@
 #include "course_ops.h"
 
 // ============================================================
-// getCourse: Get course details by code
+// getCourseRow: Get course details by code
 // ============================================================
 CSVRow getCourseRow(string courseCode) {
     CSVRow rows[50];
@@ -34,10 +34,8 @@ int getCreditLoad(string roll, int semester) {
     int totalCredits = 0;
 
     for (int i = 0; i < eCount; i++) {
-        // Check roll match
         if (enrollments[i].data[1] != roll) continue;
 
-        // Check semester match
         int enrollSem = 0;
         for (int j = 0; j < enrollments[i].data[3].length(); j++) {
             if (enrollments[i].data[3][j] >= '0' && enrollments[i].data[3][j] <= '9') {
@@ -46,10 +44,8 @@ int getCreditLoad(string roll, int semester) {
         }
         if (enrollSem != semester) continue;
 
-        // Check status active
         if (enrollments[i].data[5] != "active") continue;
 
-        // Find course credits
         string courseCode = enrollments[i].data[2];
         for (int j = 0; j < cCount; j++) {
             if (courses[j].data[0] == courseCode) {
@@ -75,10 +71,9 @@ bool checkPrerequisite(string roll, string courseCode) {
     CSVRow course = getCourseRow(courseCode);
     if (course.colCount == 0) return false;
 
-    string prereq = course.data[6];  // prerequisite column
+    string prereq = course.data[6];
     if (prereq == "NONE") return true;
 
-    // Check if student enrolled in prerequisite
     CSVRow enrollments[200];
     int eCount = 0, eCols = 0;
     readTXT("enrollments.txt", enrollments, eCount, eCols);
@@ -99,13 +94,13 @@ EnrollResult enrollStudent(string roll, string courseCode, int semester) {
     // 1. Check student active
     CSVRow student;
     if (!findRow("students.txt", roll, 0, student)) {
-        return STUDENT_INACTIVE;
+        return ENROLL_STUDENT_INACTIVE;
     }
-    if (student.data[5] != "active") return STUDENT_INACTIVE;
+    if (student.data[5] != "active") return ENROLL_STUDENT_INACTIVE;
 
     // 2. Check course exists
     CSVRow course = getCourseRow(courseCode);
-    if (course.colCount == 0) return COURSE_NOT_FOUND;
+    if (course.colCount == 0) return ENROLL_COURSE_NOT_FOUND;
 
     // 3. Check seats
     int capacity = 0, enrolled = 0;
@@ -119,7 +114,7 @@ EnrollResult enrollStudent(string roll, string courseCode, int semester) {
             enrolled = enrolled * 10 + (course.data[5][i] - '0');
         }
     }
-    if (enrolled >= capacity) return NO_SEATS;
+    if (enrolled >= capacity) return ENROLL_NO_SEATS;
 
     // 4. Check not already enrolled
     CSVRow enrollments[200];
@@ -127,7 +122,7 @@ EnrollResult enrollStudent(string roll, string courseCode, int semester) {
     readTXT("enrollments.txt", enrollments, eCount, eCols);
     for (int i = 0; i < eCount; i++) {
         if (enrollments[i].data[1] == roll && enrollments[i].data[2] == courseCode) {
-            return ALREADY_ENROLLED;
+            return ENROLL_ALREADY_ENROLLED;
         }
     }
 
@@ -139,10 +134,10 @@ EnrollResult enrollStudent(string roll, string courseCode, int semester) {
             courseCredits = courseCredits * 10 + (course.data[2][i] - '0');
         }
     }
-    if (currentLoad + courseCredits > 21) return CREDIT_OVERLOAD;
+    if (currentLoad + courseCredits > 21) return ENROLL_CREDIT_OVERLOAD;
 
     // 6. Check prerequisite
-    if (!checkPrerequisite(roll, courseCode)) return PREREQ_NOT_MET;
+    if (!checkPrerequisite(roll, courseCode)) return ENROLL_PREREQ_NOT_MET;
 
     // All checks passed - create enrollment
     int maxId = 0;
@@ -158,7 +153,6 @@ EnrollResult enrollStudent(string roll, string courseCode, int semester) {
     }
     maxId++;
 
-    // Format new ID
     string newId = "E";
     if (maxId < 1000) newId += "0";
     if (maxId < 100) newId += "0";
@@ -173,7 +167,6 @@ EnrollResult enrollStudent(string roll, string courseCode, int semester) {
     if (numStr == "") numStr = "0";
     newId += numStr;
 
-    // Semester to string
     string semStr = "";
     int s = semester;
     while (s > 0) {
@@ -213,14 +206,13 @@ EnrollResult enrollStudent(string roll, string courseCode, int semester) {
     }
     writeTXT("courses.txt", courses, cCount, cCols);
 
-    return SUCCESS;
+    return ENROLL_SUCCESS;
 }
 
 // ============================================================
 // dropCourse: Drop course (if no attendance records)
 // ============================================================
 bool dropCourse(string roll, string courseCode, int semester) {
-    // Check attendance records
     CSVRow attendance[500];
     int aCount = 0, aCols = 0;
     readTXT("attendance_log.txt", attendance, aCount, aCols);
@@ -232,7 +224,6 @@ bool dropCourse(string roll, string courseCode, int semester) {
         }
     }
 
-    // Update enrollment to dropped
     CSVRow enrollments[200];
     int eCount = 0, eCols = 0;
     readTXT("enrollments.txt", enrollments, eCount, eCols);
@@ -253,7 +244,6 @@ bool dropCourse(string roll, string courseCode, int semester) {
 
     writeTXT("enrollments.txt", enrollments, eCount, eCols);
 
-    // Decrease enrolled count
     CSVRow courses[50];
     int cCount = 0, cCols = 0;
     readTXT("courses.txt", courses, cCount, cCols);
@@ -290,8 +280,8 @@ void listEnrolledStudents(string courseCode, int semester) {
     int eCount = 0, eCols = 0;
     readTXT("enrollments.txt", enrollments, eCount, eCols);
 
-    cout << "\n--- Enrolled in " << courseCode << " (Sem " << semester << ") ---" << endl;
-    cout << "Roll No\t\tName" << endl;
+    cout << "--- Enrolled in " << courseCode << " (Sem " << semester << ") ---" << endl;
+    cout << "Roll No		Name" << endl;
     cout << "------------------------" << endl;
 
     bool found = false;
@@ -313,7 +303,7 @@ void listEnrolledStudents(string courseCode, int semester) {
             name = student.data[1];
         }
 
-        cout << enrollments[i].data[1] << "\t\t" << name << endl;
+        cout << enrollments[i].data[1] << "		" << name << endl;
         found = true;
     }
 
@@ -325,42 +315,74 @@ void listEnrolledStudents(string courseCode, int semester) {
 // Menu wrappers
 // ============================================================
 void enrollStudentMenu() {
-    cout << "\n========== ENROLL STUDENT ==========" << endl;
+    cout << "
+========== ENROLL STUDENT ==========" << endl;
+
+    cin.ignore(10000, '\n');  // Buffer  clear
+
     string roll, courseCode;
     int semester;
 
-    cout << "Enter Roll: "; cin >> roll;
-    cout << "Enter Course: "; cin >> courseCode;
-    cout << "Enter Semester: "; cin >> semester;
+    cout << "Enter Roll: ";
+    getline(cin, roll);  
+
+    cout << "Enter Course code: ";
+    getline(cin, courseCode);
+
+    cout << "Enter Semester: ";
+    string semInput;
+    getline(cin, semInput);
+    semester = 0;
+    for (int i = 0; i < semInput.length(); i++) {
+        if (semInput[i] >= '0' && semInput[i] <= '9') {
+            semester = semester * 10 + (semInput[i] - '0');
+        }
+    }
 
     EnrollResult result = enrollStudent(roll, courseCode, semester);
 
     switch (result) {
-        case SUCCESS:
+        case ENROLL_SUCCESS:
          cout << "Enrolled successfully!" << endl; break;
-        case STUDENT_INACTIVE:
+        case ENROLL_STUDENT_INACTIVE:
          cout << "Error: Student inactive!" << endl; break;
-        case COURSE_NOT_FOUND:
+        case ENROLL_COURSE_NOT_FOUND:
          cout << "Error: Course not found!" << endl; break;
-        case NO_SEATS: 
+        case ENROLL_NO_SEATS: 
         cout << "Error: No seats!" << endl; break;
-        case ALREADY_ENROLLED:
+        case ENROLL_ALREADY_ENROLLED:
          cout << "Error: Already enrolled!" << endl; break;
-        case CREDIT_OVERLOAD: 
+        case ENROLL_CREDIT_OVERLOAD: 
         cout << "Error: Credit > 21!" << endl; break;
-        case PREREQ_NOT_MET:
+        case ENROLL_PREREQ_NOT_MET:
          cout << "Error: Prerequisite not met!" << endl; break;
     }
 }
 
 void dropCourseMenu() {
-    cout << "\n========== DROP COURSE ==========" << endl;
+    cout << "
+========== DROP COURSE ==========" << endl;
+
+    cin.ignore(10000, '\n');  
+
     string roll, courseCode;
     int semester;
 
-    cout << "Enter Roll: "; cin >> roll;
-    cout << "Enter Course: "; cin >> courseCode;
-    cout << "Enter Semester: "; cin >> semester;
+    cout << "Enter Roll: ";
+    getline(cin, roll);
+
+    cout << "Enter Course code: ";
+    getline(cin, courseCode);
+
+    cout << "Enter Semester: ";
+    string semInput;
+    getline(cin, semInput);
+    semester = 0;
+    for (int i = 0; i < semInput.length(); i++) {
+        if (semInput[i] >= '0' && semInput[i] <= '9') {
+            semester = semester * 10 + (semInput[i] - '0');
+        }
+    }
 
     if (dropCourse(roll, courseCode, semester)) {
         cout << "Course dropped!" << endl;
@@ -369,12 +391,26 @@ void dropCourseMenu() {
 
 void listEnrolledMenu() 
 {
-    cout << "\n========== LIST ENROLLED ==========" << endl;
+    cout << "
+========== LIST ENROLLED ==========" << endl;
+
+    cin.ignore(10000, ' \n'); 
+
     string courseCode;
     int semester;
 
-    cout << "Enter Course: "; cin >> courseCode;
-    cout << "Enter Semester: "; cin >> semester;
+    cout << "Enter Course code: ";
+    getline(cin, courseCode);
+
+    cout << "Enter Semester: ";
+    string semInput;
+    getline(cin, semInput);
+    semester = 0;
+    for (int i = 0; i < semInput.length(); i++) {
+        if (semInput[i] >= '0' && semInput[i] <= '9') {
+            semester = semester * 10 + (semInput[i] - '0');
+        }
+    }
 
     listEnrolledStudents(courseCode, semester);
 }

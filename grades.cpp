@@ -61,7 +61,7 @@ string getLetterGrade(double total) {
 // ============================================================
 // applyAttendancePenalty: F if < 75%
 // ============================================================
-string applyAttendancePenalty(string roll, string courseCode, string grade) {
+string applyAttendancePenalty(const string& roll, const string& courseCode, string grade) {
     double pct = getAttendancePct(roll, courseCode);
     if (pct < 75.0) return "F";
     return grade;

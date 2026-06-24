@@ -41,14 +41,16 @@ int daysBetween(const string& date1, const string& date2) {
 }
 
 double computeLateFine(const string& feeId) {
-    vector<vector<string>> fees = readTXT("fees.txt");
+    CSVRow fees[MAX_ROWS];
+    int feeCount = 0, feeColCount = 0;
+    readTXT("fees.txt", fees, feeCount, feeColCount);
 
-    for (int i = 1; i < fees.size(); i++) {
-        if (fees[i].size() < 9) continue;
-        if (fees[i][0] == feeId) {
-            string dueDate = fees[i][5];
-            string paidDate = fees[i][6];
-            string totalFeeStr = fees[i][3];
+    for (int i = 1; i < feeCount; i++) {
+        if (fees[i].colCount < 9) continue;
+        if (fees[i].data[0] == feeId) {
+            string dueDate = fees[i].data[5];
+            string paidDate = fees[i].data[6];
+            string totalFeeStr = fees[i].data[3];
 
             double totalFee = 0.0;
             bool afterDecimal = false;
@@ -90,11 +92,13 @@ void recordPayment() {
     string feeId;
     cin >> feeId;
 
-    vector<vector<string>> fees = readTXT("fees.txt");
+    CSVRow fees[MAX_ROWS];
+    int feeCount = 0, feeColCount = 0;
+    readTXT("fees.txt", fees, feeCount, feeColCount);
     int index = -1;
 
-    for (int i = 1; i < fees.size(); i++) {
-        if (fees[i].size() > 0 && fees[i][0] == feeId) {
+    for (int i = 1; i < feeCount; i++) {
+        if (fees[i].colCount > 0 && fees[i].data[0] == feeId) {
             index = i;
             break;
         }
@@ -105,8 +109,8 @@ void recordPayment() {
         return;
     }
 
-    cout << "Current Paid Amount: " << fees[index][4] << endl;
-    cout << "Total Fee: " << fees[index][3] << endl;
+    cout << "Current Paid Amount: " << fees[index].data[4] << endl;
+    cout << "Total Fee: " << fees[index].data[3] << endl;
 
     cout << "Enter Payment Amount: ";
     string amountStr;
@@ -115,14 +119,14 @@ void recordPayment() {
     double currentPaid = 0.0;
     bool afterDecimal = false;
     double decimalPlace = 0.1;
-    for (int j = 0; j < fees[index][4].length(); j++) {
-        if (fees[index][4][j] == '.') {
+    for (int j = 0; j < fees[index].data[4].length(); j++) {
+        if (fees[index].data[4][j] == '.') {
             afterDecimal = true;
-        } else if (fees[index][4][j] >= '0' && fees[index][4][j] <= '9') {
+        } else if (fees[index].data[4][j] >= '0' && fees[index].data[4][j] <= '9') {
             if (!afterDecimal) {
-                currentPaid = currentPaid * 10 + (fees[index][4][j] - '0');
+                currentPaid = currentPaid * 10 + (fees[index].data[4][j] - '0');
             } else {
-                currentPaid += (fees[index][4][j] - '0') * decimalPlace;
+                currentPaid += (fees[index].data[4][j] - '0') * decimalPlace;
                 decimalPlace *= 0.1;
             }
         }
@@ -170,46 +174,46 @@ void recordPayment() {
     if (d == "") d = "0";
     paidStr += d;
 
-    fees[index][4] = paidStr;
+    fees[index].data[4] = paidStr;
 
     cout << "Enter Payment Date (DD-MM-YYYY): ";
     string payDate;
     cin >> payDate;
-    fees[index][6] = payDate;
+    fees[index].data[6] = payDate;
 
     cout << "Enter Payment Method (Online/Cash/Bank): ";
     string method;
     cin >> method;
-    fees[index][7] = method;
+    fees[index].data[7] = method;
 
     double totalFee = 0.0;
     afterDecimal = false;
     decimalPlace = 0.1;
-    for (int j = 0; j < fees[index][3].length(); j++) {
-        if (fees[index][3][j] == '.') {
+    for (int j = 0; j < fees[index].data[3].length(); j++) {
+        if (fees[index].data[3][j] == '.') {
             afterDecimal = true;
-        } else if (fees[index][3][j] >= '0' && fees[index][3][j] <= '9') {
+        } else if (fees[index].data[3][j] >= '0' && fees[index].data[3][j] <= '9') {
             if (!afterDecimal) {
-                totalFee = totalFee * 10 + (fees[index][3][j] - '0');
+                totalFee = totalFee * 10 + (fees[index].data[3][j] - '0');
             } else {
-                totalFee += (fees[index][3][j] - '0') * decimalPlace;
+                totalFee += (fees[index].data[3][j] - '0') * decimalPlace;
                 decimalPlace *= 0.1;
             }
         }
     }
 
     if (totalPaid >= totalFee) {
-        int days = daysBetween(fees[index][5], payDate);
+        int days = daysBetween(fees[index].data[5], payDate);
         if (days > 0) {
-            fees[index][8] = "paid_late";
+            fees[index].data[8] = "paid_late";
         } else {
-            fees[index][8] = "paid";
+            fees[index].data[8] = "paid";
         }
     } else if (totalPaid > 0) {
-        fees[index][8] = "partial";
+        fees[index].data[8] = "partial";
     }
 
-    writeTXT("fees.txt", fees);
+    writeTXT("fees.txt", fees, feeCount, feeColCount);
     cout << "Payment recorded successfully!" << endl;
 }
 
@@ -220,11 +224,13 @@ void generateReceipt() {
     string feeId;
     cin >> feeId;
 
-    vector<vector<string>> fees = readTXT("fees.txt");
+    CSVRow fees[MAX_ROWS];
+    int feeCount = 0, feeColCount = 0;
+    readTXT("fees.txt", fees, feeCount, feeColCount);
     int index = -1;
 
-    for (int i = 1; i < fees.size(); i++) {
-        if (fees[i].size() > 0 && fees[i][0] == feeId) {
+    for (int i = 1; i < feeCount; i++) {
+        if (fees[i].colCount > 0 && fees[i].data[0] == feeId) {
             index = i;
             break;
         }
@@ -239,14 +245,14 @@ void generateReceipt() {
     bool afterDecimal = false;
     double decimalPlace = 0.1;
 
-    for (int j = 0; j < fees[index][3].length(); j++) {
-        if (fees[index][3][j] == '.') {
+    for (int j = 0; j < fees[index].data[3].length(); j++) {
+        if (fees[index].data[3][j] == '.') {
             afterDecimal = true;
-        } else if (fees[index][3][j] >= '0' && fees[index][3][j] <= '9') {
+        } else if (fees[index].data[3][j] >= '0' && fees[index].data[3][j] <= '9') {
             if (!afterDecimal) {
-                totalFee = totalFee * 10 + (fees[index][3][j] - '0');
+                totalFee = totalFee * 10 + (fees[index].data[3][j] - '0');
             } else {
-                totalFee += (fees[index][3][j] - '0') * decimalPlace;
+                totalFee += (fees[index].data[3][j] - '0') * decimalPlace;
                 decimalPlace *= 0.1;
             }
         }
@@ -254,14 +260,14 @@ void generateReceipt() {
 
     afterDecimal = false;
     decimalPlace = 0.1;
-    for (int j = 0; j < fees[index][4].length(); j++) {
-        if (fees[index][4][j] == '.') {
+    for (int j = 0; j < fees[index].data[4].length(); j++) {
+        if (fees[index].data[4][j] == '.') {
             afterDecimal = true;
-        } else if (fees[index][4][j] >= '0' && fees[index][4][j] <= '9') {
+        } else if (fees[index].data[4][j] >= '0' && fees[index].data[4][j] <= '9') {
             if (!afterDecimal) {
-                paid = paid * 10 + (fees[index][4][j] - '0');
+                paid = paid * 10 + (fees[index].data[4][j] - '0');
             } else {
-                paid += (fees[index][4][j] - '0') * decimalPlace;
+                paid += (fees[index].data[4][j] - '0') * decimalPlace;
                 decimalPlace *= 0.1;
             }
         }
@@ -270,17 +276,18 @@ void generateReceipt() {
     double fine = computeLateFine(feeId);
     double balance = totalFee + fine - paid;
 
-    vector<string> student = findRow("students.txt", 0, fees[index][1]);
-    string name = (student.size() > 1) ? student[1] : "Unknown";
+    CSVRow student;
+    bool found = findRow("students.txt", fees[index].data[1], 0, student);
+    string name = (student.colCount > 1) ? student.data[1] : "Unknown";
 
     cout << "\n" << setfill('=') << setw(50) << "" << endl;
     cout << setfill(' ') << setw(20) << "" << "FEE RECEIPT" << endl;
     cout << setfill('=') << setw(50) << "" << endl;
     cout << setfill(' ');
     cout << left << setw(20) << "Fee ID: " << feeId << endl;
-    cout << left << setw(20) << "Roll Number: " << fees[index][1] << endl;
+    cout << left << setw(20) << "Roll Number: " << fees[index].data[1] << endl;
     cout << left << setw(20) << "Student Name: " << name << endl;
-    cout << left << setw(20) << "Semester: " << fees[index][2] << endl;
+    cout << left << setw(20) << "Semester: " << fees[index].data[2] << endl;
     cout << "----------------------------------------------" << endl;
     cout << left << setw(25) << "Tuition Fee: " << "Rs. " << totalFee << endl;
     cout << left << setw(25) << "Late Fine: " << "Rs. " << fine << endl;
@@ -289,35 +296,37 @@ void generateReceipt() {
     cout << left << setw(25) << "Amount Paid: " << "Rs. " << paid << endl;
     cout << left << setw(25) << "Balance: " << "Rs. " << balance << endl;
     cout << "----------------------------------------------" << endl;
-    cout << left << setw(25) << "Due Date: " << fees[index][5] << endl;
-    cout << left << setw(25) << "Payment Date: " << fees[index][6] << endl;
-    cout << left << setw(25) << "Payment Method: " << fees[index][7] << endl;
-    cout << left << setw(25) << "Status: " << fees[index][8] << endl;
+    cout << left << setw(25) << "Due Date: " << fees[index].data[5] << endl;
+    cout << left << setw(25) << "Payment Date: " << fees[index].data[6] << endl;
+    cout << left << setw(25) << "Payment Method: " << fees[index].data[7] << endl;
+    cout << left << setw(25) << "Status: " << fees[index].data[8] << endl;
     cout << setfill('=') << setw(50) << "" << endl;
 }
 
 void getDefaulters() {
     cout << "\n========== FEE DEFAULTERS ==========" << endl;
 
-    vector<vector<string>> fees = readTXT("fees.txt");
+    CSVRow fees[MAX_ROWS];
+    int feeCount = 0, feeColCount = 0;
+    readTXT("fees.txt", fees, feeCount, feeColCount);
     FeeDefaulter defaulters[50];
     int defCount = 0;
 
-    for (int i = 1; i < fees.size() && defCount < 50; i++) {
-        if (fees[i].size() < 9) continue;
+    for (int i = 1; i < feeCount && defCount < 50; i++) {
+        if (fees[i].colCount < 9) continue;
 
         double totalFee = 0.0, paid = 0.0;
         bool afterDecimal = false;
         double decimalPlace = 0.1;
 
-        for (int j = 0; j < fees[i][3].length(); j++) {
-            if (fees[i][3][j] == '.') {
+        for (int j = 0; j < fees[i].data[3].length(); j++) {
+            if (fees[i].data[3][j] == '.') {
                 afterDecimal = true;
-            } else if (fees[i][3][j] >= '0' && fees[i][3][j] <= '9') {
+            } else if (fees[i].data[3][j] >= '0' && fees[i].data[3][j] <= '9') {
                 if (!afterDecimal) {
-                    totalFee = totalFee * 10 + (fees[i][3][j] - '0');
+                    totalFee = totalFee * 10 + (fees[i].data[3][j] - '0');
                 } else {
-                    totalFee += (fees[i][3][j] - '0') * decimalPlace;
+                    totalFee += (fees[i].data[3][j] - '0') * decimalPlace;
                     decimalPlace *= 0.1;
                 }
             }
@@ -325,14 +334,14 @@ void getDefaulters() {
 
         afterDecimal = false;
         decimalPlace = 0.1;
-        for (int j = 0; j < fees[i][4].length(); j++) {
-            if (fees[i][4][j] == '.') {
+        for (int j = 0; j < fees[i].data[4].length(); j++) {
+            if (fees[i].data[4][j] == '.') {
                 afterDecimal = true;
-            } else if (fees[i][4][j] >= '0' && fees[i][4][j] <= '9') {
+            } else if (fees[i].data[4][j] >= '0' && fees[i].data[4][j] <= '9') {
                 if (!afterDecimal) {
-                    paid = paid * 10 + (fees[i][4][j] - '0');
+                    paid = paid * 10 + (fees[i].data[4][j] - '0');
                 } else {
-                    paid += (fees[i][4][j] - '0') * decimalPlace;
+                    paid += (fees[i].data[4][j] - '0') * decimalPlace;
                     decimalPlace *= 0.1;
                 }
             }
@@ -340,15 +349,16 @@ void getDefaulters() {
 
         double outstanding = totalFee - paid;
 
-        if (outstanding > 0 && fees[i][8] != "paid" && fees[i][8] != "paid_late") {
-            defaulters[defCount].roll_no = fees[i][1];
+        if (outstanding > 0 && fees[i].data[8] != "paid" && fees[i].data[8] != "paid_late") {
+            defaulters[defCount].roll_no = fees[i].data[1];
 
-            vector<string> student = findRow("students.txt", 0, fees[i][1]);
-            defaulters[defCount].name = (student.size() > 1) ? student[1] : "Unknown";
+            CSVRow student;
+            bool found = findRow("students.txt", fees[i].data[1], 0, student);
+            defaulters[defCount].name = (student.colCount > 1) ? student.data[1] : "Unknown";
 
             defaulters[defCount].outstanding = outstanding;
 
-            string dueDate = fees[i][5];
+            string dueDate = fees[i].data[5];
             int days = daysBetween(dueDate, "25-06-2026");
             defaulters[defCount].weeksOverdue = days / 7;
             if (defaulters[defCount].weeksOverdue < 0) defaulters[defCount].weeksOverdue = 0;

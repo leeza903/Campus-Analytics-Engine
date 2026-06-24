@@ -2,7 +2,6 @@
 #define FEE_TRACKER_H
 
 #include <iostream>
-#include <vector>
 #include <string>
 #include <iomanip>
 #include "filehandler.h"
